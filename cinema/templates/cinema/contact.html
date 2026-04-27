@@ -1,0 +1,88 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}Contact Us - Cineplex{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <h2 style="text-align: center; color: #1e293b; margin-bottom: 2rem;">Contact Us</h2>
+    
+    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;">
+        
+        <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(30, 41, 59, 0.1);">
+            <h3 style="color: #1e293b; font-size: 1.3rem; margin-bottom: 1.5rem;">Send Us a Message</h3>
+            
+            <form method="POST" action="#">
+                {% csrf_token %}
+                
+                <div style="margin-bottom: 1.2rem;">
+                    <label style="display: block; color: #1e293b; font-weight: 600; margin-bottom: 0.5rem;">Name</label>
+                    <input type="text" name="name" required style="width: 100%; padding: 0.7rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+                </div>
+                
+                <div style="margin-bottom: 1.2rem;">
+                    <label style="display: block; color: #1e293b; font-weight: 600; margin-bottom: 0.5rem;">Email</label>
+                    <input type="email" name="email" required style="width: 100%; padding: 0.7rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+                </div>
+                
+                <div style="margin-bottom: 1.2rem;">
+                    <label style="display: block; color: #1e293b; font-weight: 600; margin-bottom: 0.5rem;">Subject</label>
+                    <input type="text" name="subject" required style="width: 100%; padding: 0.7rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+                </div>
+                
+                <div style="margin-bottom: 1.2rem;">
+                    <label style="display: block; color: #1e293b; font-weight: 600; margin-bottom: 0.5rem;">Message</label>
+                    <textarea name="message" rows="6" required style="width: 100%; padding: 0.7rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; resize: vertical;"></textarea>
+                </div>
+                
+                <button type="submit" style="width: 100%; background: #1e293b; color: white; padding: 0.9rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                    Send Message
+                </button>
+            </form>
+        </div>
+        
+        <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(30, 41, 59, 0.1);">
+            <h3 style="color: #1e293b; font-size: 1.3rem; margin-bottom: 1.5rem;">Contact Info</h3>
+            
+            <div style="display: flex; align-items: start; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="font-size: 1.5rem;">📍</div>
+                <div>
+                    <div style="color: #1e293b; font-weight: 600; margin-bottom: 0.3rem;">Address</div>
+                    <div style="color: #64748b; font-size: 0.9rem;">123 Cinema Street<br>Movie City, MC 12345</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: start; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="font-size: 1.5rem;">📞</div>
+                <div>
+                    <div style="color: #1e293b; font-weight: 600; margin-bottom: 0.3rem;">Phone</div>
+                    <div style="color: #64748b; font-size: 0.9rem;">+1 (555) 123-4567</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: start; gap: 1rem; margin-bottom: 1.5rem;">
+                <div style="font-size: 1.5rem;">✉️</div>
+                <div>
+                    <div style="color: #1e293b; font-weight: 600; margin-bottom: 0.3rem;">Email</div>
+                    <div style="color: #64748b; font-size: 0.9rem;">support@cineplex.com</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: start; gap: 1rem;">
+                <div style="font-size: 1.5rem;">🕐</div>
+                <div>
+                    <div style="color: #1e293b; font-weight: 600; margin-bottom: 0.3rem;">Hours</div>
+                    <div style="color: #64748b; font-size: 0.9rem;">24/7 Online Booking<br>Support: Mon-Fri, 9AM-6PM</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 768px) {
+        div[style*="grid-template-columns: 1.5fr 1fr"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}

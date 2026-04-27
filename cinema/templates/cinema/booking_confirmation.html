@@ -1,0 +1,312 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}Booking Confirmed - Cineplex{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="success-icon">✓</div>
+    <h2>Booking Confirmed!</h2>
+    <p class="success-message">Your tickets have been successfully booked.</p>
+
+    <div class="booking-details">
+        <h3>Booking Details</h3>
+
+        <div class="detail-row">
+            <span class="label">Booking Reference:</span>
+            <span class="value reference">{{ booking.booking_reference }}</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Movie:</span>
+            <span class="value">{{ booking.movie.title }}</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Customer Name:</span>
+            <span class="value">{{ booking.customer_name }}</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Email:</span>
+            <span class="value">{{ booking.customer_email }}</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Phone:</span>
+            <span class="value">{{ booking.customer_phone }}</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Number of Tickets:</span>
+            <span class="value">{{ booking.number_of_tickets }}</span>
+        </div>
+
+        <div class="detail-row total">
+            <span class="label">Total Amount:</span>
+            <span class="value">${{ booking.total_amount }}</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Booking Date:</span>
+            <span class="value">{{ booking.booking_date|date:"F d, Y - h:i A" }}</span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Payment Status:</span>
+            <span class="value status-{{ booking.payment_status|lower }}">
+                {{ booking.get_payment_status_display }}
+            </span>
+        </div>
+
+        <div class="detail-row qr-section"
+            style="flex-direction: column; align-items: center; padding: 2rem 1rem; background: #f8fafc; margin: 1rem -1rem; border-radius: 8px;">
+            <h3 style="color: #1e293b; margin-bottom: 1rem; font-size: 1.2rem;">Your Ticket QR Code</h3>
+            {% if booking.qr_code %}
+            <img src="{{ booking.qr_code.url }}" alt="QR Code"
+                style="width: 200px; height: 200px; border: 3px solid #e2e8f0; border-radius: 8px; padding: 0.5rem; background: white;">
+            <p style="color: #64748b; margin-top: 1rem; text-align: center; font-size: 0.9rem;">
+                 Show this QR code at the cinema entrance
+            </p>
+            {% else %}
+            <div
+                style="width: 200px; height: 200px; background: #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                QR Code Generating...
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="{% url 'cinema:payment' booking.booking_reference %}" class="btn-payment">Proceed to Payment</a>
+        <a href="{% url 'cinema:home' %}" class="btn-home">Back to Home</a>
+    </div>
+
+</div>
+
+<style>
+    body {
+        background: #f8f9fa !important;
+    }
+
+    .confirmation-container {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    .confirmation-container h2 {
+        color: #1a202c !important;
+    }
+
+    .success-icon {
+        background: #10b981 !important;
+    }
+
+    .success-message {
+        color: #718096 !important;
+    }
+
+    .booking-details {
+        background: #f8f9fa !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    .booking-details h3 {
+        color: #1a202c !important;
+    }
+
+    .detail-row .label {
+        color: #718096 !important;
+    }
+
+    .detail-row .value {
+        color: #1a202c !important;
+    }
+
+    .reference {
+        color: #2563eb !important;
+    }
+
+    .detail-row.total {
+        background: #eff6ff !important;
+    }
+
+    .detail-row.total .label,
+    .detail-row.total .value {
+        color: #2563eb !important;
+    }
+
+    .btn-payment {
+        background: #2563eb !important;
+    }
+
+    .btn-payment:hover {
+        background: #1d4ed8 !important;
+    }
+
+    .btn-home {
+        background: #6b7280 !important;
+    }
+
+    .btn-home:hover {
+        background: #4b5563 !important;
+    }
+
+    .note {
+        background: #fef3c7 !important;
+        border-color: #fbbf24 !important;
+    }
+
+    .note p {
+        color: #92400e !important;
+    }
+
+    .confirmation-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background: #28a745;
+        color: white;
+        font-size: 3rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+    }
+
+    .confirmation-container h2 {
+        color: #28a745;
+        margin-bottom: 0.5rem;
+    }
+
+    .success-message {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .booking-details {
+        background: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: left;
+        margin-bottom: 2rem;
+    }
+
+    .booking-details h3 {
+        color: #333;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-row .label {
+        color: #666;
+        font-weight: bold;
+    }
+
+    .detail-row .value {
+        color: #333;
+    }
+
+    .reference {
+        color: #e63946;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .detail-row.total {
+        background: #fff;
+        margin: 0.5rem -1rem;
+        padding: 1rem 1rem;
+        border-radius: 4px;
+    }
+
+    .detail-row.total .label,
+    .detail-row.total .value {
+        color: #e63946;
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+
+    .status-pending {
+        color: #ffc107;
+        font-weight: bold;
+    }
+
+    .status-completed {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .status-failed {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .actions {
+        margin: 2rem 0;
+    }
+
+    .btn-payment {
+        display: inline-block;
+        background: #28a745;
+        color: white;
+        padding: 1rem 2rem;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 0.5rem;
+        transition: background 0.3s;
+    }
+
+    .btn-payment:hover {
+        background: #218838;
+    }
+
+    .btn-home {
+        display: inline-block;
+        background: #6c757d;
+        color: white;
+        padding: 1rem 2rem;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 0.5rem;
+        transition: background 0.3s;
+    }
+
+    .btn-home:hover {
+        background: #5a6268;
+    }
+
+    .note {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-top: 2rem;
+    }
+
+    .note p {
+        margin: 0.5rem 0;
+        color: #856404;
+    }
+</style>
+{% endblock %}

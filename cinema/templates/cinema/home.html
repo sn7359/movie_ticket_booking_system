@@ -1,0 +1,278 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}Home - Cineplex{% endblock %}
+
+{% block container_start %}{% endblock %}
+
+{% block content %}
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: rgba(30, 41, 59, 0.7);
+        border-radius: 50%;
+        padding: 2.5rem;
+    }
+    
+    .carousel-indicators button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .carousel-indicators button.active {
+        background-color: #3b82f6;
+        width: 14px;
+        height: 14px;
+    }
+
+    
+    .genre-container {
+        background: #f8fafc;
+        padding: 2rem 0;
+        margin: 2rem 0;
+        border-radius: 12px;
+    }
+
+    .genre-heading {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1.5rem;
+    }
+
+    .movie-grid-small {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .movie-card-small {
+        background: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(30, 41, 59, 0.08);
+        border: 1px solid #e2e8f0;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .movie-card-small:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 20px rgba(30, 41, 59, 0.12);
+    }
+
+    .movie-card-small img {
+        width: 100%;
+        height: 350px;
+        object-fit: cover;
+    }
+
+    .movie-card-content {
+        padding: 1.2rem;
+    }
+
+    .movie-card-content h3 {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.6rem;
+        font-size: 1.1rem;
+    }
+
+    .movie-card-content p {
+        color: #64748b;
+        margin: 0.4rem 0;
+        font-size: 0.9rem;
+    }
+
+    .movie-price {
+        color: #3b82f6;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0.8rem 0;
+    }
+
+    .movie-card-btn {
+        display: block;
+        background: #1e293b;
+        color: white;
+        padding: 0.7rem;
+        text-align: center;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: background 0.3s;
+    }
+
+    .movie-card-btn:hover {
+        background: #334155;
+        color: white;
+    }
+</style>
+
+<div style="width: 100%; background: #ffffff; padding: 0;">
+
+    <!-- Featured Movies Carousel - FULL WIDTH -->
+    <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel" style="margin-bottom: 3rem; width: 100%;">
+        <div class="carousel-indicators">
+            {% for movie in movies|slice:":3" %}
+            <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></button>
+            {% endfor %}
+        </div>
+        
+        <div class="carousel-inner">
+            {% for movie in movies|slice:":3" %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                {% if movie.poster %}
+                    <img src="{{ movie.poster.url }}" class="d-block w-100" alt="{{ movie.title }}" style="height: 650px; object-fit: cover;">
+                {% else %}
+                    <div style="height: 650px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); display: flex; align-items: center; justify-content: center;">
+                        <h2 style="color: white; font-size: 3rem;">{{ movie.title }}</h2>
+                    </div>
+                {% endif %}
+                <div class="carousel-caption" style="background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); bottom: 0; left: 0; right: 0; padding: 3rem 5rem;">
+                    <h3 style="font-weight: 700; font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">{{ movie.title }}</h3>
+                    <p style="font-size: 1.2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); margin-bottom: 1rem;">{{ movie.get_genre_display }} | {{ movie.rating }} | {{ movie.duration }} mins</p>
+                    <a href="{% url 'cinema:movie_detail' movie.id %}" class="btn btn-primary btn-lg" style="background: #3b82f6; border: none; font-weight: 600; padding: 0.8rem 2rem; font-size: 1.1rem;">Book Now - ₹{{ movie.ticket_price }}</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+
+    <!-- ================= GENRE SECTIONS ================= -->
+
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 3rem 3rem;">
+
+        <!-- Action Movies -->
+        {% if action_movies %}
+        <div class="genre-container">
+            <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+                <h2 class="genre-heading">Action Movies</h2>
+                <div class="movie-grid-small">
+                    {% for movie in action_movies %}
+                    <div class="movie-card-small">
+                        {% if movie.poster %}
+                            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+                        {% else %}
+                            <div style="width: 100%; height: 350px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); display: flex; align-items: center; justify-content: center; color: #e2e8f0;">No Poster</div>
+                        {% endif %}
+                        <div class="movie-card-content">
+                            <h3>{{ movie.title }}</h3>
+                            <p>Rating: {{ movie.rating }}</p>
+                            <p>Duration: {{ movie.duration }} mins</p>
+                            <p class="movie-price">₹{{ movie.ticket_price }}</p>
+                            <a href="{% url 'cinema:movie_detail' movie.id %}" class="movie-card-btn">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Comedy Movies -->
+        {% if comedy_movies %}
+        <div class="genre-container">
+            <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+                <h2 class="genre-heading">Comedy Movies</h2>
+                <div class="movie-grid-small">
+                    {% for movie in comedy_movies %}
+                    <div class="movie-card-small">
+                        {% if movie.poster %}
+                            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+                        {% else %}
+                            <div style="width: 100%; height: 350px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); display: flex; align-items: center; justify-content: center; color: #e2e8f0;">No Poster</div>
+                        {% endif %}
+                        <div class="movie-card-content">
+                            <h3>{{ movie.title }}</h3>
+                            <p>Rating: {{ movie.rating }}</p>
+                            <p>Duration: {{ movie.duration }} mins</p>
+                            <p class="movie-price">₹{{ movie.ticket_price }}</p>
+                            <a href="{% url 'cinema:movie_detail' movie.id %}" class="movie-card-btn">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Drama Movies -->
+        {% if drama_movies %}
+        <div class="genre-container">
+            <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+                <h2 class="genre-heading">Drama Movies</h2>
+                <div class="movie-grid-small">
+                    {% for movie in drama_movies %}
+                    <div class="movie-card-small">
+                        {% if movie.poster %}
+                            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+                        {% else %}
+                            <div style="width: 100%; height: 350px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); display: flex; align-items: center; justify-content: center; color: #e2e8f0;">No Poster</div>
+                        {% endif %}
+                        <div class="movie-card-content">
+                            <h3>{{ movie.title }}</h3>
+                            <p>Rating: {{ movie.rating }}</p>
+                            <p>Duration: {{ movie.duration }} mins</p>
+                            <p class="movie-price">₹{{ movie.ticket_price }}</p>
+                            <a href="{% url 'cinema:movie_detail' movie.id %}" class="movie-card-btn">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ================= ALL MOVIES SECTION ================= -->
+
+        <div style="margin-top: 3rem;">
+            <h2 class="genre-heading" style="text-align: center; border: none; padding: 0;">All Movies</h2>
+
+            <div class="movie-grid-small" style="margin-top: 2rem;">
+                {% if movies %}
+                    {% for movie in movies %}
+                    <div class="movie-card-small">
+                        {% if movie.poster %}
+                            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+                        {% else %}
+                            <div style="width: 100%; height: 350px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); display: flex; align-items: center; justify-content: center; color: #e2e8f0;">No Poster</div>
+                        {% endif %}
+                        
+                        <div class="movie-card-content">
+                            <h3>{{ movie.title }}</h3>
+                            <p><strong>Genre:</strong> {{ movie.get_genre_display }}</p>
+                            <p>Rating: {{ movie.rating }}</p>
+                            <p>Duration: {{ movie.duration }} mins</p>
+                            <p class="movie-price">₹{{ movie.ticket_price }}</p>
+                            <a href="{% url 'cinema:movie_detail' movie.id %}" class="movie-card-btn">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center; color: #718096; grid-column: 1 / -1;">No movies available at the moment.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+
+{% block container_end %}{% endblock %}

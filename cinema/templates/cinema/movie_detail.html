@@ -1,0 +1,233 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}{{ movie.title }} - Cineplex{% endblock %}
+
+{% block content %}
+<div class="movie-detail-container">
+    <div class="movie-detail">
+        <div class="poster-section">
+            {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+            {% else %}
+                <div class="no-poster-large">No Poster Available</div>
+            {% endif %}
+        </div>
+        
+        <div class="info-section">
+            <h2>{{ movie.title }}</h2>
+            <div class="movie-meta">
+                <span class="badge">{{ movie.get_genre_display }}</span>
+                <span class="badge">{{ movie.rating }}</span>
+                <span class="badge">{{ movie.duration }} mins</span>
+            </div>
+            
+            <div class="movie-description">
+                <h3>Description</h3>
+                <p>{{ movie.description }}</p>
+            </div>
+            
+            <div class="movie-stats">
+                <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+                <p><strong>Available Seats:</strong> {{ movie.available_seats }}</p>
+                <p class="price-large"><strong>Ticket Price:</strong> ₹{{ movie.ticket_price }}</p>
+            </div>
+            
+            {% if movie.available_seats > 0 %}
+                <a href="{% url 'cinema:book_ticket' movie.id %}" class="btn-book">Book Tickets Now</a>
+            {% else %}
+                <button class="btn-disabled" disabled>Sold Out</button>
+            {% endif %}
+            
+            <a href="{% url 'cinema:home' %}" class="btn-back">← Back to Movies</a>
+        </div>
+    </div>
+</div>
+
+<!-- AI Movie Suggestions Section -->
+{% if suggestions %}
+<div style="max-width: 1200px; margin: 3rem auto; padding: 0 2rem;">
+    <h2 style="color: #1e293b; font-weight: 700; margin-bottom: 2rem; font-size: 1.8rem;">
+         You Might Also Like
+    </h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+        {% for suggested_movie in suggestions %}
+        <div style="background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(30, 41, 59, 0.1); border: 1px solid #e2e8f0; transition: transform 0.3s;"
+             onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(30, 41, 59, 0.15)';"
+             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(30, 41, 59, 0.1)';">
+            {% if suggested_movie.poster %}
+                <img src="{{ suggested_movie.poster.url }}" alt="{{ suggested_movie.title }}" style="width: 100%; height: 350px; object-fit: cover;">
+            {% else %}
+                <div style="width: 100%; height: 350px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); display: flex; align-items: center; justify-content: center; color: #e2e8f0;">
+                    No Poster
+                </div>
+            {% endif %}
+            
+            <div style="padding: 1.2rem;">
+                <h3 style="font-weight: 600; color: #1e293b; margin-bottom: 0.6rem; font-size: 1.1rem;">{{ suggested_movie.title }}</h3>
+                <p style="color: #64748b; font-size: 0.9rem; margin: 0.3rem 0;">{{ suggested_movie.get_genre_display }}</p>
+                <p style="color: #64748b; font-size: 0.9rem; margin: 0.3rem 0;">⭐ {{ suggested_movie.rating }}</p>
+                <p style="color: #3b82f6; font-size: 1.3rem; font-weight: 700; margin: 0.8rem 0;">₹{{ suggested_movie.ticket_price }}</p>
+                <a href="{% url 'cinema:movie_detail' suggested_movie.id %}" 
+                   style="display: block; background: #1e293b; color: white; padding: 0.7rem; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: background 0.3s;"
+                   onmouseover="this.style.background='#334155';"
+                   onmouseout="this.style.background='#1e293b';">
+                    View Details
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <p style="text-align: center; color: #94a3b8; margin-top: 1.5rem; font-size: 0.9rem;">
+        💡 Based on your interest in {{ movie.get_genre_display }} movies
+    </p>
+</div>
+{% endif %}
+
+<style>
+.movie-detail-container {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.movie-detail {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 3rem;
+}
+
+.poster-section img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.no-poster-large {
+    width: 100%;
+    height: 500px;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #718096;
+    border-radius: 8px;
+    font-size: 1.1rem;
+}
+
+.info-section h2 {
+    color: #1a202c;
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.movie-meta {
+    margin-bottom: 2rem;
+}
+
+.badge {
+    display: inline-block;
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid #dbeafe;
+}
+
+.movie-description {
+    margin: 2rem 0;
+}
+
+.movie-description h3 {
+    color: #1a202c;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.movie-description p {
+    color: #4a5568;
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+
+.movie-stats {
+    margin: 2rem 0;
+}
+
+.movie-stats p {
+    margin: 0.8rem 0;
+    color: #4a5568;
+    font-size: 1.05rem;
+}
+
+.movie-stats strong {
+    color: #1a202c;
+    font-weight: 600;
+}
+
+.price-large {
+    font-size: 2rem;
+    color: #2563eb;
+    margin: 1.5rem 0;
+    font-weight: 700;
+}
+
+.btn-book {
+    display: inline-block;
+    background: #2563eb;
+    color: white;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    transition: background 0.2s ease;
+    font-weight: 600;
+}
+
+.btn-book:hover {
+    background: #1d4ed8;
+}
+
+.btn-disabled {
+    background: #e2e8f0;
+    color: #a0aec0;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: not-allowed;
+}
+
+.btn-back {
+    display: inline-block;
+    color: #718096;
+    text-decoration: none;
+    margin-left: 1.5rem;
+    font-weight: 500;
+}
+
+.btn-back:hover {
+    color: #2563eb;
+}
+
+@media (max-width: 768px) {
+    .movie-detail {
+        grid-template-columns: 1fr;
+    }
+    
+    .movie-detail-container {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %}

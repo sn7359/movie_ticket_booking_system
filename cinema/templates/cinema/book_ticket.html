@@ -1,0 +1,331 @@
+{% extends 'cinema/base.html' %}
+
+{% block title %}Book Tickets - {{ movie.title }}{% endblock %}
+
+{% block content %}
+<div class="booking-container">
+    <h2>Book Tickets for {{ movie.title }}</h2>
+    
+    <div class="booking-layout">
+        <div class="movie-summary">
+            {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+            {% else %}
+                <div class="no-poster-small">No Poster</div>
+            {% endif %}
+            <h3>{{ movie.title }}</h3>
+            <p><strong>Genre:</strong> {{ movie.get_genre_display }}</p>
+            <p><strong>Duration:</strong> {{ movie.duration }} mins</p>
+            <p><strong>Rating:</strong> {{ movie.rating }}</p>
+            <p class="ticket-price"><strong>Price per ticket:</strong> ₹{{ movie.ticket_price }}</p>
+            <p><strong>Available Seats:</strong> {{ movie.available_seats }}</p>
+        </div>
+        
+        <div class="booking-form">
+            <form method="POST" id="bookingForm">
+                {% csrf_token %}
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="form-group">
+                    <label>{{ form.customer_name.label }}</label>
+                    {{ form.customer_name }}
+                    {% if form.customer_name.errors %}
+                        <span class="error">{{ form.customer_name.errors }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.customer_email.label }}</label>
+                    {{ form.customer_email }}
+                    {% if form.customer_email.errors %}
+                        <span class="error">{{ form.customer_email.errors }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.customer_phone.label }}</label>
+                    {{ form.customer_phone }}
+                    {% if form.customer_phone.errors %}
+                        <span class="error">{{ form.customer_phone.errors }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ form.number_of_tickets.label }}</label>
+                    {{ form.number_of_tickets }}
+                    {% if form.number_of_tickets.errors %}
+                        <span class="error">{{ form.number_of_tickets.errors }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="total-amount">
+                    <h3>Total Amount: ₹<span id="totalAmount">{{ movie.ticket_price }}</span></h3>
+                </div>
+                
+                <button type="submit" class="btn-submit">Confirm Booking</button>
+                <a href="{% url 'cinema:movie_detail' movie.id %}" class="btn-cancel">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+    background: #f8f9fa !important;
+}
+
+.booking-container,
+.payment-container {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.booking-container h2,
+.payment-container h2 {
+    color: #1a202c !important;
+}
+
+.booking-summary,
+.movie-summary,
+.payment-section,
+.booking-form {
+    background: #f8f9fa !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.movie-summary h3,
+.booking-summary h3,
+.payment-section h3 {
+    color: #1a202c !important;
+    border-bottom: 2px solid #2563eb !important;
+}
+
+.summary-item span,
+.movie-summary p {
+    color: #718096 !important;
+}
+
+.summary-item strong,
+.movie-summary strong {
+    color: #1a202c !important;
+}
+
+.ticket-price {
+    color: #2563eb !important;
+}
+
+.btn-submit,
+.btn-payment,
+.btn-pay {
+    background: #2563eb !important;
+}
+
+.btn-submit:hover,
+.btn-payment:hover,
+.btn-pay:hover {
+    background: #1d4ed8 !important;
+}
+
+label {
+    color: #1a202c !important;
+}
+
+.form-input {
+    background: #ffffff !important;
+    color: #2d3748 !important;
+    border-color: #e2e8f0 !important;
+}
+
+.form-input:focus {
+    border-color: #2563eb !important;
+}
+
+.total-amount {
+    background: #eff6ff !important;
+    border: 1px solid #dbeafe !important;
+}
+
+.total-amount h3 {
+    color: #2563eb !important;
+}
+    .booking-container {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .booking-container h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 2rem;
+    }
+    
+    .booking-layout {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+    }
+    
+    .movie-summary {
+        background: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+    
+    .movie-summary img {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    .no-poster-small {
+        width: 100%;
+        height: 300px;
+        background: #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    .movie-summary h3 {
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    
+    .movie-summary p {
+        margin: 0.5rem 0;
+        color: #666;
+    }
+    
+    .ticket-price {
+        color: #e63946;
+        font-size: 1.2rem;
+        margin: 1rem 0 !important;
+    }
+    
+    .booking-form {
+        background: #f9f9f9;
+        padding: 2rem;
+        border-radius: 8px;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: bold;
+    }
+    
+    .form-input {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: #e63946;
+    }
+    
+    .error {
+        color: #e63946;
+        font-size: 0.9rem;
+        display: block;
+        margin-top: 0.3rem;
+    }
+    
+    .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+    
+    .alert-error {
+        background: #fee;
+        color: #c33;
+        border: 1px solid #fcc;
+    }
+    
+    .alert-success {
+        background: #efe;
+        color: #3c3;
+        border: 1px solid #cfc;
+    }
+    
+    .total-amount {
+        background: #fff;
+        padding: 1rem;
+        border-radius: 4px;
+        margin: 1.5rem 0;
+        text-align: center;
+    }
+    
+    .total-amount h3 {
+        color: #e63946;
+        margin: 0;
+    }
+    
+    .btn-submit {
+        background: #e63946;
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .btn-submit:hover {
+        background: #d62828;
+    }
+    
+    .btn-cancel {
+        display: inline-block;
+        color: #666;
+        text-decoration: none;
+        margin-left: 1rem;
+        padding: 1rem 2rem;
+    }
+    
+    .btn-cancel:hover {
+        color: #333;
+    }
+    
+    @media (max-width: 768px) {
+        .booking-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    // Calculate total amount dynamically
+    const ticketPrice = {{ movie.ticket_price }};
+    const ticketInput = document.querySelector('input[name="number_of_tickets"]');
+    const totalAmountSpan = document.getElementById('totalAmount');
+    
+    ticketInput.addEventListener('input', function() {
+        const numTickets = parseInt(this.value) || 1;
+        const total = (ticketPrice * numTickets).toFixed(2);
+        totalAmountSpan.textContent = total;
+    });
+</script>
+{% endblock %}
